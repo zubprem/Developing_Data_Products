@@ -1,0 +1,86 @@
+Shiny Application Reproducible Pitch
+========================================================
+author: 
+date: 14 Jan, 2022 
+autosize: true
+
+Introduction
+========================================================
+
+This presentation contains pitch for my shiny application.  
+The application features an interactive plot using the built-in swiss dataset in R.
+
+The scatter plot features Fertility as a measure of Education level in the swiss dataset.
+
+Link for my shiny application - https://zubprem.shinyapps.io/ddp_app/
+
+Plot 
+========================================================
+Below is a sample plot from my application.
+In the application you can select desired data points using brush for regression line.
+```{r, echo = FALSE}
+with(swiss, plot(Education, Fertility))
+abline(lm(Fertility ~ Education, data = swiss), col = "blue", lwd = 2)
+```
+
+Main R code
+========================================================
+
+```{r, echo=TRUE, eval=FALSE}
+model <- reactive({
+        brushed_data <- brushedPoints(swiss, input$brush1, xvar = "Education", yvar = "Fertility")
+        if(nrow(brushed_data) < 2){
+            return(NULL)
+        }
+        lm(Fertility ~ Education, data = brushed_data)
+    })
+    
+    output$slopeOut <- renderText({
+        if(input$show_values == FALSE){
+           return("") 
+        }
+        if(is.null(model())){
+            "No Model Found"
+        } else {
+            model()[[1]][2]}
+    })
+    
+    output$intOut <- renderText({
+        if(input$show_values == FALSE){
+            return("")
+        }
+        if(is.null(model())){
+            "No Model Found"
+        } else {
+            model()[[1]][1]
+        }
+    })
+    
+    output$plot1 <- renderPlot({
+        plot(swiss$Education, swiss$Fertility, xlab = "Education",
+             ylab = "Fertility", main = "Fertility as a measure of Education Level (select required data points using brush)",
+             cex = 1.5, pch = 16, bty = "n")
+        if(!is.null(model())){
+            abline(model(), col = "blue", lwd = 2)
+        }
+    })
+```
+
+Observations
+========================================================
+
+A few observations you can make using the interactive plot on the app - 
+- The relation between Fertility and Education is inverse.
+- The negative slope is much steeper at lower Education levels than higher. This can be seen by sub selecting the corresponding points using the brush in the plot.
+
+Assumptions & Conclusion
+========================================================
+
+The analysis is obviously quite simplistic as we have not included many other potential variables in the linear model.
+However if we assume that Education level is an independent variable uncorrelated to other variables we can safely ascertain that Fertility and Education levels are inversely related.
+
+Thank You.
+
+
+
+

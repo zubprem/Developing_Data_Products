@@ -35,13 +35,14 @@ shinyServer(function(input, output) {
     })
     
     output$plot1 <- renderPlot({
-        plot(swiss$Education, swiss$Fertility, xlab = "Education",
-             ylab = "Fertility", main = "Fertility as a measure of Education Level (select required data points using brush)",
+        plot(swiss[, input$variable], swiss$Fertility, xlab = input$variable,
+             ylab = "Fertility", main = paste("Fertility as a measure of", input$variable, "(select required data points using brush)"),
              cex = 1.5, pch = 16, bty = "n")
         if(!is.null(model())){
             abline(model(), col = "blue", lwd = 2)
         }
     })
+        
 })
 
   
